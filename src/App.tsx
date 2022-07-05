@@ -1,25 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import CoinInput from './components/CoinInput/CoinInput';
+import coingeckoService from './services/coingecko.service';
+
+export const currencies = ['bitcoin', 'ethereum', 'binancecoin', 'usd', 'eur', 'pln'];
+
+
+let state = {
+
+}
+
+const updateQuoteState = () => {
+    coingeckoService.getQuotes(currencies).then((elo) => {
+        state = {
+            ...state,
+            ...elo
+        }
+    });
+}
+
+updateQuoteState();
 
 function App() {
+    // setInterval(() => {
+    //     updateQuoteState();
+    // }, 30000)
+
+    const [inputValues, setInputValues] = useState({});
+
+    const onInputChange = (coinName, value) => {
+        console.log('coinName', coinName);
+        console.log('value', value);
+    }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className="root">
+          <div className="currencies-list">
+              {
+                  currencies.map((currencyName) => {
+                      return <CoinInput key={currencyName}
+                                        coinName={currencyName}
+                                        inputValue={inputValues[currencyName]}
+                                        callback={onInputChange}></CoinInput>
+                  })
+              }
+          </div>
+      </div>
   );
 }
 
