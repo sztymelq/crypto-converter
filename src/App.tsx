@@ -5,6 +5,13 @@ import coingeckoService from './services/coingecko.service';
 
 export const currencies = ['bitcoin', 'ethereum', 'binancecoin', 'usd'];
 
+const defaultInputValues = {
+    bitcoin: '',
+    ethereum: '',
+    binancecoin: '',
+    usd: ''
+}
+
 let quotes = {}
 
 const updateQuoteState = () => {
@@ -23,14 +30,13 @@ function App() {
     //     updateQuoteState();
     // }, 30000)
 
-    const [inputValues, setInputValues] = useState({
-        bitcoin: 0,
-        ethereum: 0,
-        binancecoin: 0,
-        usd: 0
-    });
+    const [inputValues, setInputValues] = useState(defaultInputValues);
 
     const calculateAllPrices = (coinName, value) => {
+        if (value === '') {
+            setInputValues(defaultInputValues)
+            return;
+        }
         const referenceUSD: number = quotes[coinName].usd * value;
         const newInputValues = Object.keys(inputValues).reduce((acc, key) => {
             if (quotes[key]) {
