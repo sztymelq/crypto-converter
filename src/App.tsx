@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import './App.css';
+import './App.scss';
 import CoinInput from './components/CoinInput/CoinInput';
 import coingeckoService from './services/coingecko.service';
 
-export const currencies = ['bitcoin', 'ethereum', 'binancecoin', 'usd', 'eur', 'pln'];
+export const currencies = ['bitcoin', 'ethereum', 'binancecoin', 'usd'];
 
-
-let state = {
-
-}
+let quotes = {}
 
 const updateQuoteState = () => {
-    coingeckoService.getQuotes(currencies).then((elo) => {
-        state = {
-            ...state,
-            ...elo
+    coingeckoService.getQuotes(currencies).then(({data}) => {
+        quotes = {
+            ...quotes,
+            ...data
         }
     });
 }
@@ -26,22 +23,38 @@ function App() {
     //     updateQuoteState();
     // }, 30000)
 
-    const [inputValues, setInputValues] = useState({});
+    const [inputValues, setInputValues] = useState({
+        bitcoin: 0,
+        ethereum: 0,
+        binancecoin: 0,
+        usd: 0
+    });
 
-    const onInputChange = (coinName, value) => {
-        console.log('coinName', coinName);
-        console.log('value', value);
+    const calculateAllPrices = (coinName, value) => {
+        const referenceUSD: number = quotes[coinName].usd * value;
+        const newInputValues = Object.keys(inputValues).reduce((acc, key) => {
+            if (quotes[key]) {
+                return {
+                    ...acc,
+                    [key]: referenceUSD / quotes[key].usd
+                }
+            }
+            return acc;
+        }, inputValues);
+
+        setInputValues(newInputValues);
     }
 
   return (
       <div className="root">
+          <div className="title">Crypto Converter</div>
           <div className="currencies-list">
               {
                   currencies.map((currencyName) => {
                       return <CoinInput key={currencyName}
                                         coinName={currencyName}
                                         inputValue={inputValues[currencyName]}
-                                        callback={onInputChange}></CoinInput>
+                                        callback={calculateAllPrices}></CoinInput>
                   })
               }
           </div>

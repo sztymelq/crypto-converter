@@ -8,17 +8,23 @@ interface CoinInputProps {
 }
 
 const CoinInput: FC<CoinInputProps> = ({ coinName, inputValue, callback }) => {
-    const [val, setValue] = useState(inputValue);
+    const [_, setValue] = useState(inputValue);
 
-    const onchange = (e: any) => {
-        setValue(e.target.value);
-        callback(coinName, e.target.value);
+    const onInputChange = ({ target }) => {
+        if (!isNaN(target.value)) {
+            setValue(target.value);
+            callback(coinName, target.value);
+        }
     };
 
     return (
         <div className={styles.CoinInput}>
             <label htmlFor={coinName}>{coinName}</label>
-            <input id={coinName} type="text" value={val} onChange={onchange}/>
+            <input id={coinName}
+                   type="number"
+                   step="0.1"
+                   value={inputValue}
+                   onChange={onInputChange}/>
         </div>
     );
 }
