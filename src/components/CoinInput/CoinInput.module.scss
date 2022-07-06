@@ -1,8 +1,7 @@
 .CoinInput {
-    display: grid;
-    grid-template-columns: 0.5fr 1fr;
-
+    display: flex;
     & > input {
+        width: 80%;
         border: none;
         box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
         border-radius: 100vmax;
@@ -11,7 +10,9 @@
     }
 
     & > label {
+        width: 12%;
         display: flex;
         align-items: center;
+        padding-right: 5px;
     }
 }

@@ -3,22 +3,37 @@ import './App.scss';
 import CoinInput from './components/CoinInput/CoinInput';
 import coingeckoService from './services/coingecko.service';
 
-export const currencies = ['bitcoin', 'ethereum', 'binancecoin', 'usd'];
+export const currencies = ['bitcoin', 'ethereum', 'binancecoin', 'usd', 'eur', 'pln'];
 
-const defaultInputValues = {
-    bitcoin: '',
-    ethereum: '',
-    binancecoin: '',
-    usd: ''
+const coinSymbols = {
+    bitcoin: 'BTC',
+    ethereum: 'ETH',
+    binancecoin: 'BNB',
+    usd: 'USD',
+    eur: 'EUR',
+    pln: 'PLN'
 }
+
+const defaultInputValues = currencies.reduce((acc, next) => ({
+        ...acc,
+        [next]: ''
+    }), {})
 
 let quotes = {}
 
 const updateQuoteState = () => {
     coingeckoService.getQuotes(currencies).then(({data}) => {
+        const dollar = data.usd;
+
         quotes = {
             ...quotes,
-            ...data
+            ...data,
+            eur: {
+                usd: 1 / dollar.eur
+            },
+            pln: {
+                usd: 1 / dollar.pln
+            }
         }
     });
 }
@@ -56,10 +71,11 @@ function App() {
           <div className="title">Crypto Converter</div>
           <div className="currencies-list">
               {
-                  currencies.map((currencyName) => {
-                      return <CoinInput key={currencyName}
-                                        coinName={currencyName}
-                                        inputValue={inputValues[currencyName]}
+                  currencies.map((currencyId) => {
+                      return <CoinInput key={currencyId}
+                                        coinSymbol={coinSymbols[currencyId]}
+                                        coinId={currencyId}
+                                        inputValue={inputValues[currencyId]}
                                         callback={calculateAllPrices}></CoinInput>
                   })
               }
