@@ -54,6 +54,13 @@ function App() {
         }
         const referenceUSD: number = quotes[coinName].usd * value;
         const newInputValues = Object.keys(inputValues).reduce((acc, key) => {
+            if (key === coinName) {
+                return {
+                    ...acc,
+                    [key]: value
+                };
+            }
+
             if (quotes[key]) {
                 return {
                     ...acc,
@@ -68,7 +75,7 @@ function App() {
 
   return (
       <div className="root">
-          <div className="title">Crypto Converter</div>
+          <div className="title">Crypto Calculator</div>
           <div className="currencies-list">
               {
                   currencies.map((currencyId) => {
